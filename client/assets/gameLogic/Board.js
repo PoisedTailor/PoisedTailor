@@ -334,7 +334,7 @@ Board.prototype._updateIfMatch = function(tuple){
 Board.prototype._removeMatches = function() {
 	this._iterate(this._updateIfMatch.bind(this));
 }
-
+/*
 var readline = require('readline');
 
 var rl = readline.createInterface({
@@ -351,7 +351,7 @@ rl.question("", function(tuples) {
 	console.log(b1.get(['state', 'target']));
 	rl.close();
 });
-
+*/
 // ----
 var b1 = new Board();
 
