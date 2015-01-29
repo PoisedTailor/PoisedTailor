@@ -4,7 +4,7 @@
 // BOARD CLASS - gives you a new playable board
 var Board = function(m, n, operation, difficulty) {
 	this.state = this.board = [[]];
-	this.create(m, n, operation, difficulty);
+	this._create(m, n, operation, difficulty);
 }
 
 // Takes a string or an array and gets board attributes
@@ -18,6 +18,9 @@ Board.prototype.get = function(attr) {
 		return attr.map(function(e) {
 			return this[e];
 		}.bind(this));
+	}
+	else {
+		throw new Error('attribute must be an array or a string')
 	}
 }
 
@@ -34,7 +37,7 @@ Board.prototype.operationsList = Board.prototype.opsList = {
 	mod:function (a, b) {return a % b}
 }
 
-Board.prototype.create = function(m, n, operation, difficulty) {
+Board.prototype._create = function(m, n, operation, difficulty) {
 	this.rows = m || this.rows || 12;
 	this.cols = n || this.cols || 6;
 	this.op = this.operation = operation || this.op || this.opsList.add;
@@ -43,7 +46,7 @@ Board.prototype.create = function(m, n, operation, difficulty) {
 	return this;
 }
 
-Board.prototype.swap = Board.prototype.makeSwap = function(t1, t2, cb){
+Board.prototype.swap = Board.prototype.makeSwap = function(t1, t2, cb, cb2){
 	if (!t1 || !t2){throw new Error ('cannot call swap without two tuples')}
 	if (typeof t1 !== 'object' || typeof t2 !== 'object'){throw new Error ('cannot call swap without two tuples')}
 	if (!t1.length || !t2.length){throw new Error ('cannot call swap without two tuples')}
@@ -52,15 +55,25 @@ Board.prototype.swap = Board.prototype.makeSwap = function(t1, t2, cb){
 	if (!this.isValidSwap(t1,t2)) {
 		throw new Error ('has inValid swap. Call the isValidSwap fn before calling swap.')
 	}
+
 	cb = cb || function(){};
+	cb2 = cb2 || function(){};
+
 	var array = this.idMatches(t1, t2).concat(this.idMatches(t2,t1));
 
+	// swaps the tuples on the board
 	var temp = this._get(t1);
 	this._set(t1, this._get(t2));
 	this._set(t2, temp);
 
+	// callback for interacting with the nodes which operate to the target
 	cb(array);
-	return array;
+
+
+	this._regenConsumedNodes(array);
+	this._isPlayable()?null:this._refresh();
+
+	return this;
 }
 
 // Come back to if time allows
@@ -207,7 +220,7 @@ Board.prototype._isPlayable = function() {
 }
 
 Board.prototype._refresh = function() {
-	this.create();
+	this._create();
 }
 
 Board.prototype._setBoardInit = Board.prototype._init =  function(min, max){
@@ -352,7 +365,6 @@ Board.prototype._removeMatches = function() {
 // 	rl.close();
 // });
 
-// ----
 // var b1 = new Board();
 
 // console.log(b1.get('state'), "+++");
@@ -361,7 +373,11 @@ Board.prototype._removeMatches = function() {
 
 
 /* How to use the board api..
-
-Instantiate a new Board (new Board())
+<<<<<<< HEAD:client/assets/gameLogic/Board.js
+# Instantiate a new Board (new Board())
+# Get Board for rendering
+# Use user DOM events to swap (call isValidSwap before swapping) -- feedback on whether or not isValidSwap should be called is welcome
+# Get Board to re-render 
+## Todo points system and timer (should it sync with the server?)
 
 */
