@@ -59,7 +59,7 @@ describe('Game Logic testing', function() {
     testboard = new Board();
   });
 
-  describe("Board Creation testing", function() {
+  xdescribe("Board Creation testing", function() {
     it("should be able to create a new board", function() {
       expect(testboard.state).to.have.length.above(0);
     });
@@ -96,7 +96,7 @@ describe('Game Logic testing', function() {
   });
   
   describe("Swap testing", function(){
-    it("should throw error on swapping non-neighbors", function() {
+    xit("should throw error on swapping non-neighbors", function() {
       testboard.board = [[1,0,1,0],[0,0,0,0]];
       testboard.target = 2;
       expect(testboard.swap.bind(this,[0,0],[0,2])).to.throw(Error);
