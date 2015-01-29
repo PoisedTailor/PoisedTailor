@@ -171,7 +171,7 @@ Board.prototype._makeBoard = function(m,n) {
 Board.prototype._regenConsumedNodes = function(array) {
 	var board = this.board;
 	var that = this;
-	console.log(array);
+	// console.log(array);
 	array.forEach(function(e) {
 		that._set(e, that.ran());
 	})
@@ -335,27 +335,27 @@ Board.prototype._removeMatches = function() {
 	this._iterate(this._updateIfMatch.bind(this));
 }
 
-var readline = require('readline');
+// var readline = require('readline');
 
-var rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+// var rl = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout
+// });
 
-rl.question("", function(tuples) {
-	var a = tuples.split("p")
-	var t1 = JSON.parse(a.shift());
-	var t2 = JSON.parse(a.shift());
-	console.log("IS VALID", b1.isValidSwap(t1,t2));
-	b1.swap(t1,t2,b1._regenConsumedNodes.bind(b1));
-	console.log(b1.get(['state', 'target']));
-	rl.close();
-});
+// rl.question("", function(tuples) {
+// 	var a = tuples.split("p")
+// 	var t1 = JSON.parse(a.shift());
+// 	var t2 = JSON.parse(a.shift());
+// 	console.log("IS VALID", b1.isValidSwap(t1,t2));
+// 	b1.swap(t1,t2,b1._regenConsumedNodes.bind(b1));
+// 	console.log(b1.get(['state', 'target']));
+// 	rl.close();
+// });
 
 // ----
-var b1 = new Board();
+// var b1 = new Board();
 
-console.log(b1.get('state'), "+++");
+// console.log(b1.get('state'), "+++");
 // b1.swap([0,0],[0,1])
 
 
@@ -365,11 +365,3 @@ console.log(b1.get('state'), "+++");
 Instantiate a new Board (new Board())
 
 */
-
-
-
-
-
-
-
-
