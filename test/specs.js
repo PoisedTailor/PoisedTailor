@@ -56,7 +56,7 @@ describe('Game Logic testing', function() {
   }
 
   beforeEach(function() {
-    testboard = new Board().create();
+    testboard = new Board();
   });
 
   describe("Board Creation testing", function() {
@@ -73,16 +73,16 @@ describe('Game Logic testing', function() {
     });
 
     it("should be able to create board of m rows by n columns", function() {
-      testboard = new Board().create(3, 2);
+      testboard = new Board(3, 2);
       expect(testboard.state.length).to.equal(3);
       expect(testboard.state[0].length).to.equal(2);
-      testboard = new Board().create(20, 10);
+      testboard = new Board(20, 10);
       expect(testboard.state.length).to.equal(20);
       expect(testboard.state[0].length).to.equal(10);
     });
 
     it("create should create new board with new values", function() {
-      testboard2 = new Board().create();
+      testboard2 = new Board();
       expect(testboard.state[0]).not.to.equal(testboard2.state[0]);
     });
     
@@ -103,13 +103,11 @@ describe('Game Logic testing', function() {
     });
 
     it("should swap and match neighbors", function() {
+      testboard = new Board(2, 4);
       testboard.board = [[1,0,1,0],[0,0,0,0]];
       testboard.target = 2;
+      testboard.swap([0,0],[0,1]);
       console.log(testboard.board);
-      console.log(testboard.target);
-      var result = testboard.swap([0,0],[0,1]);
-      console.log(result);
-      //expect(testboard.swap.bind(this,[0,0],[0,1])).to.;
     });
   });
 
