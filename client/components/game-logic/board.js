@@ -184,7 +184,7 @@ Board.prototype._makeBoard = function(m,n) {
 Board.prototype._regenConsumedNodes = function(array) {
 	var board = this.board;
 	var that = this;
-	console.log(array);
+	// console.log(array);
 	array.forEach(function(e) {
 		that._set(e, that.ran());
 	})
@@ -360,12 +360,11 @@ Board.prototype._removeMatches = function() {
 // 	var t1 = JSON.parse(a.shift());
 // 	var t2 = JSON.parse(a.shift());
 // 	console.log("IS VALID", b1.isValidSwap(t1,t2));
-// 	b1.swap(t1,t2);
+// 	b1.swap(t1,t2,b1._regenConsumedNodes.bind(b1));
 // 	console.log(b1.get(['state', 'target']));
 // 	rl.close();
 // });
 
-// // ----
 // var b1 = new Board();
 
 // console.log(b1.get('state'), "+++");
@@ -374,9 +373,11 @@ Board.prototype._removeMatches = function() {
 
 
 /* How to use the board api..
+<<<<<<< HEAD:client/assets/gameLogic/Board.js
 # Instantiate a new Board (new Board())
 # Get Board for rendering
 # Use user DOM events to swap (call isValidSwap before swapping) -- feedback on whether or not isValidSwap should be called is welcome
 # Get Board to re-render 
 ## Todo points system and timer (should it sync with the server?)
+
 */
