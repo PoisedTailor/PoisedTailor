@@ -2,9 +2,9 @@
 This is the game view.
   <table class="table table-bordered">
     <tr ng-repeat="row in grid">
-      <td ng-repeat="val in row track by $index">
-        {{val}} ({{$parent.$index}}, {{$index}})
-      </td>
+      <td ng-repeat="val in row track by $index" ng-dblclick="getCell($parent.$index, $index)">
+        {{val}}
+    </td>
     </tr>
   </table>
 </div>
