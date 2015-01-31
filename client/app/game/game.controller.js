@@ -28,4 +28,52 @@ angular.module('projectApp')
         $scope.cellsToSwap = [];
       }
     };
+  })
+  .directive('draggableThing', function(){
+    return {
+      restrict: 'A',
+      scope: {
+        index: "=",
+        parent: "="
+      },
+      link: function(scope, elem) {
+        elem.bind('dragstart', function(e) {
+          console.log("from", [scope.parent, scope.index]);
+        });
+      }
+    };
+  })
+  .directive('droppableArea', function(){
+    return {
+      restrict: 'A',
+      scope: {
+        index: "=",
+        parent: "="
+      },
+      link: function(scope, elem) {
+        elem.bind('drop', function(e) {
+          console.log("to", [scope.parent, scope.index]);
+        });
+      }
+    };
+  })
+  .directive('disableOver', function() {
+    return {
+      restrict: 'A',
+      link: function(scope, elem) {
+        elem.bind('dragover', function(e) {
+          e.preventDefault();
+        });
+      }
+    };
+  })
+  .directive('disableEnter', function() {
+    return {
+      restrict: 'A',
+      link: function(scope, elem) {
+        elem.bind('dragenter', function(e) {
+          e.preventDefault();
+        });
+      }
+    };
   });

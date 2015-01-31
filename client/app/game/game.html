@@ -2,8 +2,8 @@
 This is the game view.
   <table class="table table-bordered">
     <tr ng-repeat="row in grid">
-      <td ng-repeat="val in row track by $index" ng-dblclick="getCell($parent.$index, $index)">
-        {{val}}
+      <td ng-repeat="val in row track by $index" index="$index" parent="$parent.$index" ng-dblclick="getCell($parent.$index, $index)" droppable-area disable-enter disable-over>
+        <span index="$index" parent="$parent.$index" draggable-thing draggable="true">{{val}} </span>
     </td>
     </tr>
   </table>
