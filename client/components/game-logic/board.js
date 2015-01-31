@@ -1,11 +1,14 @@
-// Simple Boards implementation by Pranay and Alex Tseung
-	// v 0.0.1 (01/23/15)
+// Simple Boards implementation by Pranay
+	// v 0.0.1 (01/29/15)
 
-// BOARD CLASS - gives you a new playable board
-var Board = function(m, n, operation, difficulty) {
+// BOARD CLASS - gives you a new playable board DEPENDS on Graphyc.js
+var Board = function(m, n, operation, target, difficulty) {
 	this.state = this.board = [[]];
-	this.create(m, n, operation, difficulty);
+	this._create(m, n, operation, target, difficulty);
+	this.score = 0;
+	this.__render = false;
 }
+
 
 // Takes a string or an array and gets board attributes
 // WILL mutate array
@@ -18,6 +21,9 @@ Board.prototype.get = function(attr) {
 		return attr.map(function(e) {
 			return this[e];
 		}.bind(this));
+	}
+	else {
+		throw new Error('attribute must be an array or a string')
 	}
 }
 
@@ -34,16 +40,17 @@ Board.prototype.operationsList = Board.prototype.opsList = {
 	mod:function (a, b) {return a % b}
 }
 
-Board.prototype.create = function(m, n, operation, difficulty) {
+Board.prototype._create = function(m, n, operation, difficulty) {
 	this.rows = m || this.rows || 12;
 	this.cols = n || this.cols || 6;
 	this.op = this.operation = operation || this.op || this.opsList.add;
+	this.opName = operation || "addition";
 	this.diff = this.difficulty = difficulty || this.diff || 1;
 	this.state = this.board = this._makeBoard(this.rows, this.cols);
 	return this;
 }
 
-Board.prototype.swap = Board.prototype.makeSwap = function(t1, t2, cb){
+Board.prototype.swap = Board.prototype.makeSwap = function(t1, t2, cb, cb2){
 	if (!t1 || !t2){throw new Error ('cannot call swap without two tuples')}
 	if (typeof t1 !== 'object' || typeof t2 !== 'object'){throw new Error ('cannot call swap without two tuples')}
 	if (!t1.length || !t2.length){throw new Error ('cannot call swap without two tuples')}
@@ -52,15 +59,50 @@ Board.prototype.swap = Board.prototype.makeSwap = function(t1, t2, cb){
 	if (!this.isValidSwap(t1,t2)) {
 		throw new Error ('has inValid swap. Call the isValidSwap fn before calling swap.')
 	}
-	cb = cb || function(){};
-	var array = this.idMatches(t1, t2).concat(this.idMatches(t2,t1));
 
+	cb = cb || function(){};
+	cb2 = cb2 || function(){};
+
+	var array = this.idMatches(t1, t2).concat(this.idMatches(t2,t1));
+	// console.log("FDs", array, this.idMatches(t1, t2), this.idMatches(t1, t2));
+	// swaps the tuples on the board
 	var temp = this._get(t1);
 	this._set(t1, this._get(t2));
 	this._set(t2, temp);
 
+	// callback for interacting with the nodes which operate to the target
 	cb(array);
-	return array;
+	this._regenConsumedNodes(array);
+	this._isPlayable()?null:this._refresh();
+	this.score += (1000 * array.length);
+	return this;
+}
+
+Board.prototype.swapForce = function(t1, t2, cb, cb2){
+	if (!t1 || !t2){throw new Error ('cannot call swap without two tuples')}
+	if (typeof t1 !== 'object' || typeof t2 !== 'object'){throw new Error ('cannot call swap without two tuples')}
+	if (!t1.length || !t2.length){throw new Error ('cannot call swap without two tuples')}
+	if (t1.length !== 2 || t2.length !== 2){throw new Error ('cannot call swap without two tuples')}
+
+	if (!this.isValidSwap(t1,t2)) {
+		throw new Error ('has inValid swap. Call the isValidSwap fn before calling swap.')
+	}
+
+	cb = cb || function(){};
+	cb2 = cb2 || function(){};
+
+	var array = this.idMatches(t1, t2).concat(this.idMatches(t2,t1));
+	// console.log("FDs", array, this.idMatches(t1, t2), this.idMatches(t1, t2));
+	// swaps the tuples on the board
+	var temp = this._get(t1);
+	this._set(t1, this._get(t2));
+	this._set(t2, temp);
+
+	// callback for interacting with the nodes which operate to the target
+	cb(array);
+	this._regenConsumedNodes(array);
+	this.score += (1000 * array.length);
+	return this;
 }
 
 // Come back to if time allows
@@ -77,8 +119,9 @@ Board.prototype.generateRandom = Board.prototype.ran = function() {
 }
 
 Board.prototype.isInBounds = function(tuple, board) {
-	board = board || this.board;
-	if (tuple[0] > board.length - 1 || tuple[0] < 0 || tuple[1] > board[0].length - 1 || tuple[1] < 0) {
+	board = this.board;
+	// console.log(board.length - 1, board[0].length - 1);
+	if (+tuple[0] > (board.length - 1) || +tuple[0] < 0 || +tuple[1] > (board[0].length - 1) || +tuple[1] < 0) {
 		return false;
 	}
 	return true;
@@ -89,13 +132,13 @@ Board.prototype.isValidSwap = Board.prototype.isValid = function(t1, t2){
 	if (!this.isInBounds(t1) || !this.isInBounds(t2)) {
 		return false;
 	}
-	// console.log(this._getNeighbors(t2), t1)
 
-	// if (this._getNeighbors(t2).indexOf(t1) === -1) {
-	// 	return false;
-	// }
+	if (this._getNeighbors(t2).map(function(e) {return JSON.stringify(e)}).indexOf(JSON.stringify(t1)) === -1) {
+		console.log("got one!")
+		return false;
+	}
 	// console.log(t1,t2);
-	return this.operatesToTarget(t1, t2);
+	return this.operatesToTarget(t1, t2) || this.operatesToTarget(t2, t1);
 }
 
 Board.prototype.operatesToTarget = Board.prototype.operates = function(t1, t2, target, operation, board){
@@ -118,7 +161,6 @@ Board.prototype.operatesToTarget = Board.prototype.operates = function(t1, t2, t
 	return false;
 }
 
-
 Board.prototype.idMatches = function(currentTuple, proposedTuple, target, operation, board) {
 	target = target || this.target;
 	operation = operation || this.operation;
@@ -126,21 +168,16 @@ Board.prototype.idMatches = function(currentTuple, proposedTuple, target, operat
 	var that = this;
 	var tuple = currentTuple;
 	var rA = this._getNeighbors(currentTuple).filter(function(e) {
-		var a = that._get(e);
-		var b = that._get(proposedTuple);
-		return that.op(a,b) === target;
-	}).concat([tuple]);
+		// Check for array deep equality to ensure that the proposedTuple returns false
+		if (JSON.stringify(JSON.parse(JSON.stringify(e))) !== JSON.stringify(JSON.parse(JSON.stringify(proposedTuple)))) {
+			var a = that._get(e);
+			var b = that._get(proposedTuple);
+			return that.op(a,b) === target;
+		}
+		return false
+	}).concat([currentTuple]);
 	return rA.length < 2 ? [] : rA;
 }
-
-Board.prototype.d3ify = function(){
-	var al = this.al;
-	al.map(function(e,i,a) {
-		return {name: i, children: e, somePop: {} }
-	})
-	return al;
-}
-
 
 
 // private methods not intended to be called directly
@@ -171,14 +208,13 @@ Board.prototype._makeBoard = function(m,n) {
 Board.prototype._regenConsumedNodes = function(array) {
 	var board = this.board;
 	var that = this;
-	// console.log(array);
 	array.forEach(function(e) {
 		that._set(e, that.ran());
 	})
 	array.forEach(function(e) {
 		that._updateIfMatch(e);
 	})
-	return board;
+	return this;
 }
 
 Board.prototype._isPlayable = function() {
@@ -207,7 +243,11 @@ Board.prototype._isPlayable = function() {
 }
 
 Board.prototype._refresh = function() {
-	this.create();
+	console.log('refreshing', this.rows, this.cols)
+	this._create(this.rows,this.cols);
+	if (this.__render) {
+		this._render();
+	}
 }
 
 Board.prototype._setBoardInit = Board.prototype._init =  function(min, max){
@@ -307,7 +347,7 @@ Board.prototype._updateIfMatch = function(tuple){
 		neighborValHash[board[n[0]][n[1]]] = board[n[0]][n[1]];
 	})
 	flag ? (board[tuple[0]][tuple[1]] = update(board[tuple[0]][tuple[1]], that.op, that.target)) : null;
-	
+	this.board = board;
 
 
 	function update(val, fn, target) {
@@ -335,6 +375,10 @@ Board.prototype._removeMatches = function() {
 	this._iterate(this._updateIfMatch.bind(this));
 }
 
+Board.prototype.genId = function(tuple) {
+
+}
+
 // var readline = require('readline');
 
 // var rl = readline.createInterface({
@@ -347,21 +391,34 @@ Board.prototype._removeMatches = function() {
 // 	var t1 = JSON.parse(a.shift());
 // 	var t2 = JSON.parse(a.shift());
 // 	console.log("IS VALID", b1.isValidSwap(t1,t2));
-// 	b1.swap(t1,t2,b1._regenConsumedNodes.bind(b1));
+// 	console.log(b1.isValidSwap(t1,t2)?null:"CANNOT SWAP");
+// 	b1.swap(t1,t2);
 // 	console.log(b1.get(['state', 'target']));
-// 	rl.close();
+// 	// rl.close();
 // });
 
-// ----
+// // ----
 // var b1 = new Board();
 
 // console.log(b1.get('state'), "+++");
-// b1.swap([0,0],[0,1])
+// // b1.swap([0,0],[0,1])
 
 
 
 /* How to use the board api..
-
-Instantiate a new Board (new Board())
-
+# Instantiate a new Board (new Board())
+# Get Board for rendering
+# Use user DOM events to swap (call isValidSwap before swapping) -- feedback on whether or not isValidSwap should be called is welcome
+# Get Board to re-render 
+## Todo points system and timer (should it sync with the server?)
 */
+
+
+
+
+// var testboard = new Board();
+// testboard.board = [[1,0,1,0],[0,0,0,0]];
+// console.log(testboard.board)
+// testboard.target = 2;
+// testboard.swap([0,0],[0,1]);
+// console.log(testboard.board);
