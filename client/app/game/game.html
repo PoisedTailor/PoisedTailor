@@ -1,9 +1,10 @@
-<div class="col-md-12">
+<div class="col-md-8 col-md-offset-2">
 This is the game view.
+  <table class="table table-bordered">
+    <tr ng-repeat="row in grid">
+      <td ng-repeat="val in row track by $index" ng-dblclick="getCell($parent.$index, $index)">
+        {{val}}
+    </td>
+    </tr>
+  </table>
 </div>
-  <ul>
-    <li ng-repeat="row in grid">
-      {{row}}
-    </li>
-</ul>
-
