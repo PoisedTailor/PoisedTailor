@@ -33,12 +33,11 @@ angular.module('projectApp')
     return {
       restrict: 'A',
       scope: {
-        index: "=",
-        parent: "="
+        callback: "&getIndices"
       },
       link: function(scope, elem) {
         elem.bind('dragstart', function(e) {
-          console.log("from", [scope.parent, scope.index]);
+          scope.callback();
         });
       }
     };
@@ -47,12 +46,11 @@ angular.module('projectApp')
     return {
       restrict: 'A',
       scope: {
-        index: "=",
-        parent: "="
+        callback: "&getIndices"
       },
       link: function(scope, elem) {
         elem.bind('drop', function(e) {
-          console.log("to", [scope.parent, scope.index]);
+          scope.callback();
         });
       }
     };
