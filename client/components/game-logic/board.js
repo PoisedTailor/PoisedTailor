@@ -7,6 +7,7 @@ var Board = function(m, n, operation, target, difficulty) {
 	this._create(m, n, operation, target, difficulty);
 	this.score = 0;
 	this.__render = false;
+	this.__map = {board: 'state', state: 'board'};
 }
 
 
@@ -27,6 +28,13 @@ Board.prototype.get = function(attr) {
 	}
 }
 
+Board.prototype.set = function(attr, val) {
+	if (attr in this.__map) {
+		this[this.__map[attr]] = val
+	}
+	this[attr] = val;
+}
+
 	
 Board.prototype.operationsList = Board.prototype.opsList = {
 	add:function (a, b){return a + b},
@@ -40,13 +48,15 @@ Board.prototype.operationsList = Board.prototype.opsList = {
 	mod:function (a, b) {return a % b}
 }
 
-Board.prototype._create = function(m, n, operation, difficulty) {
+Board.prototype._create = function(m, n, operation, target, difficulty) {
 	this.rows = m || this.rows || 12;
 	this.cols = n || this.cols || 6;
+	this.target = this.target || target || 9;
 	this.op = this.operation = operation || this.op || this.opsList.add;
 	this.opName = operation || "addition";
 	this.diff = this.difficulty = difficulty || this.diff || 1;
 	this.state = this.board = this._makeBoard(this.rows, this.cols);
+	this._isPlayable()?null:this._refresh();
 	return this;
 }
 
@@ -119,7 +129,7 @@ Board.prototype.generateRandom = Board.prototype.ran = function() {
 }
 
 Board.prototype.isInBounds = function(tuple, board) {
-	board = this.board;
+	board = board || this.board;
 	// console.log(board.length - 1, board[0].length - 1);
 	if (+tuple[0] > (board.length - 1) || +tuple[0] < 0 || +tuple[1] > (board[0].length - 1) || +tuple[1] < 0) {
 		return false;
@@ -159,6 +169,20 @@ Board.prototype.operatesToTarget = Board.prototype.operates = function(t1, t2, t
 	})
 	if (flag) {return flag}
 	return false;
+}
+
+Board.prototype.autoSwapper = function(cb){
+	target = target || this.target;
+	operation = operation || this.operation;
+	board = this.board;
+	var that = this;
+	this._iterate(function(tuple) {
+		var n = that._getNeighbors(tuple);
+		for (var i = 0; i < n.length; i++) {
+			that.isValidSwap(tuple, n[i]) ? cb(tuple, n[i]) : null;
+		}
+	});
+
 }
 
 Board.prototype.idMatches = function(currentTuple, proposedTuple, target, operation, board) {
@@ -201,8 +225,7 @@ Board.prototype._makeBoard = function(m,n) {
 	this.state = this.board = board;
 	this._init();
 	this._removeMatches();
-	this._isPlayable()?null:this._refresh();
-	return board;
+	return this.board;
 }
 
 Board.prototype._regenConsumedNodes = function(array) {
@@ -229,10 +252,14 @@ Board.prototype._isPlayable = function() {
 		var neighbors = this._getNeighbors(tuple);
 		var that = this;
 		var val = board[tuple[0]][tuple[1]];
+		// console.log(tuple, val, board);
 		var flag = neighbors.some(function(e) {
 			var n2s = that._getNeighbors(e);
 			return n2s.some(function(n2e) {
-				return op(val, board[n2e[0]][n2e[1]]) === target;
+				if (JSON.stringify(tuple) !== JSON.stringify(n2e)) {
+					// console.log(op(val, board[n2e[0]][n2e[1]]) === target ? n2e+"p"+tuple : null);
+					return op(val, board[n2e[0]][n2e[1]]) === target;
+				}
 			})
 		})
 		if (flag) {
@@ -243,8 +270,10 @@ Board.prototype._isPlayable = function() {
 }
 
 Board.prototype._refresh = function() {
-	console.log('refreshing', this.rows, this.cols)
+	// console.log('refreshing', this.rows, this.cols)
 	this._create(this.rows,this.cols);
+	while(!this._isPlayable()){this._makeBoard(this.rows, this.cols)}
+	//console.log(j++);
 	if (this.__render) {
 		this._render();
 	}
@@ -252,7 +281,7 @@ Board.prototype._refresh = function() {
 
 Board.prototype._setBoardInit = Board.prototype._init =  function(min, max){
 	this.range = [(min||0), (max||9)];
-	this.target = this.range[0] + this.range[1];
+	// this.target = this.range[0] + this.range[1];
 	var board = this.state;
 	for (var i = 0; i < board.length; i++) {
 		for (var j = 0; j < board[i].length; j++) {
@@ -376,9 +405,11 @@ Board.prototype._removeMatches = function() {
 }
 
 Board.prototype.genId = function(tuple) {
-
+	//
 }
 
+
+// READLINE TESTS
 // var readline = require('readline');
 
 // var rl = readline.createInterface({
@@ -397,11 +428,32 @@ Board.prototype.genId = function(tuple) {
 // 	// rl.close();
 // });
 
-// // ----
-// var b1 = new Board();
 
-// console.log(b1.get('state'), "+++");
-// // b1.swap([0,0],[0,1])
+// UPDATE TESTS --- 1/31/15
+// // ----
+ var n = 20;
+ var j = 0;
+ for (var i = 0; i < n; i++) {
+ var b1 = new Board(2, 4);
+b1.set('state', [[1,0,1,0],[0,0,0,0]]);
+b1.set('target', 2);
+b1.swap([0,0],[0,1])
+
+// // uncomment below line to verify that the test catches matches
+// // b1.set('state', [[0,1,1,0],[0,0,0,0]]); 
+console.log(b1.board);
+b1._iterate(function(tuple) {
+	var n = b1._getNeighbors(tuple);
+	n.forEach(function(neighbor) {
+		 //console.log(b1.board);
+		if (b1.op(b1._get(neighbor), b1._get(tuple)) === 2) {
+			throw new Error('update error');
+		}
+	})
+});
+}
+console.log("Done with no errors on",n,"trials...");
+
 
 
 
@@ -416,7 +468,7 @@ Board.prototype.genId = function(tuple) {
 
 
 
-// var testboard = new Board();
+// var testboard = new Board(2,4);
 // testboard.board = [[1,0,1,0],[0,0,0,0]];
 // console.log(testboard.board)
 // testboard.target = 2;

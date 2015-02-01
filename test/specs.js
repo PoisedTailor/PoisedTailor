@@ -71,7 +71,7 @@ describe('Game Logic testing', function() {
     testboard = new Board();
   });
 
-  describe("Board Creation testing", function() {
+  xdescribe("Board Creation testing", function() {
     it("should be able to create a new board", function() {
       expect(testboard.state).to.have.length.above(0);
     });
@@ -107,7 +107,7 @@ describe('Game Logic testing', function() {
     });  
   });
   
-  describe("Swap testing", function(){
+  xdescribe("Swap testing", function(){
     it("isValidSwap should return true for valid swap", function() {
       testboard = new Board(2, 4);
       testboard.board = [[1,0,1,0],[0,0,0,0]];
