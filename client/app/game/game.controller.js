@@ -3,7 +3,7 @@
 angular.module('projectApp')
   .controller('GameCtrl', function ($scope) {
     $scope.cellsToSwap = [];
-
+    $scope.score = 0;
     var board = new Board();
     $scope.grid = board.get('state');
 
@@ -20,9 +20,11 @@ angular.module('projectApp')
         $scope.cellsToSwap[1]
       );
       if(isValid) {
-        board.swap($scope.cellsToSwap[0],
+        var updatedBoard = board.swap($scope.cellsToSwap[0],
         $scope.cellsToSwap[1]);
         $scope.cellsToSwap = [];
+        $scope.score = updatedBoard.score;
+        console.log("updatedBoard:", updatedBoard);
       } else {
         alert("Can't swap that pair! Try again.");
         $scope.cellsToSwap = [];
