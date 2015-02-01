@@ -1,10 +1,17 @@
-<div class="col-md-8 col-md-offset-2">
-This is the game view.
-  <table class="table table-bordered">
-    <tr ng-repeat="row in grid">
-      <td ng-repeat="val in row track by $index" index="$index" parent="$parent.$index" ng-dblclick="getCell($parent.$index, $index)" droppable-area disable-enter disable-over>
-        <span index="$index" parent="$parent.$index" draggable-thing draggable="true">{{val}} </span>
-    </td>
-    </tr>
-  </table>
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h1 class="page-header">Addition Game</h1>
+      <h3><span class="label label-success">Score: {{score}}</span></h3>
+        <table class="table table-bordered table-striped">
+          <tr ng-repeat="row in grid">
+            <td ng-repeat="val in row track by $index" get-indices="getCell($parent.$index, $index)" ng-dblclick="getCell($parent.$index, $index)" droppable-area disable-enter disable-over>
+              <span draggable-thing draggable="true" get-indices="getCell($parent.$index, $index)">{{val}} </span>
+          </td>
+          </tr>
+        </table>
+      </div>
+    </div>
 </div>
