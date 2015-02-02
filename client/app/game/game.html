@@ -5,9 +5,9 @@
     <div class="col-md-8 col-md-offset-2">
       <h1 class="page-header">Addition Game</h1>
       <h3><span class="label label-success">Score: {{score}}</span></h3>
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered tile-group ">
           <tr ng-repeat="row in grid">
-            <td ng-repeat="val in row track by $index" get-indices="getCell($parent.$index, $index)" droppable-area disable-enter disable-over>
+            <td ng-repeat="val in row track by $index" class="tile half" get-indices="getCell($parent.$index, $index)" droppable-area disable-enter disable-over>
               <span draggable-thing draggable="true" get-indices="getCell($parent.$index, $index)">{{val}} </span>
           </td>
           </tr>
