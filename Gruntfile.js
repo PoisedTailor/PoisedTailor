@@ -379,7 +379,7 @@ module.exports = function (grunt) {
       },
       heroku: {
         options: {
-          remote: 'heroku',
+          remote: 'git@heroku.com:PoisedTailor',
           branch: 'master'
         }
       },
