@@ -1,0 +1,21 @@
+td {
+	background: #eee;
+	padding: 0;
+}
+
+.values {
+	text-align: center;
+	vertical-align: middle;
+	line-height: 54px;
+	height: 100%;
+	font-size: 1.5em;
+	font-family: "League-Gothic", Courier;
+	background: #474747;
+	text-transform: uppercase;
+	color: #222;
+	text-shadow: 0px 2px 3px #666;
+}
+
+.metro .tile {
+	margin: 0;
+}
