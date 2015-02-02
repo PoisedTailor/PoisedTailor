@@ -52,7 +52,9 @@ angular.module('projectApp')
       },
       link: function(scope, elem) {
         elem.bind('drop', function(e) {
-          scope.callback();
+          scope.$apply(function(){
+            scope.callback();
+          });
         });
       }
     };
