@@ -33,3 +33,11 @@ td {
 	color: green;
 	font-weight: bold;
 }
+
+.score {
+	color: white !important;
+}
+
+input {
+	width: 60px;
+}

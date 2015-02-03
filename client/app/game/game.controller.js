@@ -4,6 +4,8 @@ angular.module('projectApp')
   .controller('GameCtrl', function ($scope) {
     $scope.cellsToSwap = [];
     $scope.score = 0;
+    $scope.rows = 12;
+    $scope.cols = 6;
     var board = new Board();
     $scope.grid = board.get('state');
 
@@ -12,6 +14,11 @@ angular.module('projectApp')
       if ($scope.cellsToSwap.length === 2) {
         $scope.swap();
       }
+    };
+
+    $scope.createBoard = function() {
+      board = new Board($scope.rows, $scope.cols);
+      $scope.grid = board.get('state');
     };
 
     $scope.swap = function() {
