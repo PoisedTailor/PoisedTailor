@@ -2,17 +2,19 @@
 
 <div class="container">
   <div class="row">
+
     <div class="col-md-8 col-md-offset-2">
       <h1 class="page-header">Addition Game</h1>
+      <h3 id="target">Swap 2 numbers to create matches that add to 9</h3>
       <h3><span class="label label-success">Score: {{score}}</span></h3>
-        <table class="table table-bordered tile-group ">
+        <table class="table bordered tile-group ">
           <tr ng-repeat="row in grid">
             <td ng-repeat="val in row track by $index"  get-indices="getCell($parent.$index, $index)" droppable-area disable-enter disable-over >
               <span class="tile half values" draggable-thing draggable="true" get-indices="getCell($parent.$index, $index)">{{val}} </span>
-
           </td>
           </tr>
         </table>
       </div>
+
     </div>
 </div>
