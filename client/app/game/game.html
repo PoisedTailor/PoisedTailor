@@ -5,8 +5,16 @@
 
     <div class="col-md-8 col-md-offset-2">
       <h1 class="page-header">Addition Game</h1>
-      <h3 id="target">Swap 2 numbers to create matches that add to 9</h3>
-      <h3><span class="label label-success">Score: {{score}}</span></h3>
+      <h3 id="target"><strong>Swap 2 numbers to create matches that add to 9<strong></h3>
+      <h3><span class="label bg-emerald score">Score: {{score}}</span></h3>
+        <form ng-submit="createBoard()">
+          <span>Rows</span>
+            <input type="text" ng-model="rows">
+          <span for="">Columns</span>
+            <input type="text" ng-model="cols">
+            <button class="primary">Create Board</button>
+        </form>
+        <br>
         <table class="table bordered tile-group ">
           <tr ng-repeat="row in grid">
             <td ng-repeat="val in row track by $index"  get-indices="getCell($parent.$index, $index)" droppable-area disable-enter disable-over >
