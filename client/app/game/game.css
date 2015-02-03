@@ -18,4 +18,18 @@ td {
 
 .metro .tile {
 	margin: 0;
+	display: block;
+}
+
+.metro .tile-group {
+	padding-top: 0;
+}
+
+.drag {
+	background-color: red !important;
+}
+
+#target {
+	color: green;
+	font-weight: bold;
 }

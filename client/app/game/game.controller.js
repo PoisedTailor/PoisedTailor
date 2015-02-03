@@ -39,7 +39,15 @@ angular.module('projectApp')
       },
       link: function(scope, elem) {
         elem.bind('dragstart', function(e) {
-          scope.callback();
+          scope.$apply(function(){
+            elem.addClass('drag');
+            scope.callback();
+          });
+        });
+        elem.bind('dragend', function(e) {
+          scope.$apply(function(){
+            elem.removeClass('drag');
+          });
         });
       }
     };
